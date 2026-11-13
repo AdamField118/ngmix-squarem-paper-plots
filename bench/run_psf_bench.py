@@ -56,6 +56,14 @@ def main():
     args = p.parse_args()
 
     pool = psf_pool(args.family, args.npool)
+
+    # compile both runners before anything is timed
+    obs = psf_obs(args.family, pool[0])
+    g0 = guess(obs, seed=0)
+    for acc in (False, True):
+        ngmix.em.EMFitter(maxiter=10, accelerate=acc).go(obs=obs,
+                                                         guess=g0.copy())
+
     rows = []
     t0 = time.time()
     idx = chunk_range(len(pool), args.chunk, args.nchunks)

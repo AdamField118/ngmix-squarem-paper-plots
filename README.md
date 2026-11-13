@@ -36,7 +36,8 @@ value for review.
 ```bash
 conda env create -f environment.yml && conda activate squarem-plots
 pip install -e ../ngmix-squarem-shear
-export SUPERBIT_PSFEX='/path/to/superbit/*.psf'
+# SuperBIT PSFs default to ../ngmix-squarem-shear/psf_data/...; override with
+# export SUPERBIT_PSFEX='/path/to/*.psf'
 export COSMOS_DIR=/path/to/COSMOS_25.2_training_sample   # if not in GalSim's share dir
 ```
 

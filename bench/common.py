@@ -9,7 +9,8 @@ benchmarks and the shear-bias runs use identical PSF models:
     roman     GalSim Roman H158 design PSFs
 
 Data locations are taken from the environment: SUPERBIT_PSFEX (a glob of
-.psf files) and, optionally, COSMOS_DIR for the COSMOS sample.
+.psf files; default: the copies in a sibling ngmix-squarem-shear checkout)
+and, optionally, COSMOS_DIR for the COSMOS sample.
 """
 import os
 import numpy as np
@@ -20,7 +21,7 @@ from squarem_shear.guessers import AnyNGaussPSFGuesser
 
 FAMILIES = {
     # name: (pixel scale in arcsec, stamp size)
-    'superbit': (0.141, 33),
+    'superbit': (0.141, 48),
     'hst': (0.03, 64),
     'roman': (0.055, 64),
 }
@@ -32,7 +33,9 @@ def psf_pool(family, npool, seed=31415):
     large pool only pays for the PSFs it uses
     """
     if family == 'superbit':
-        files = os.environ.get('SUPERBIT_PSFEX', 'data/psfs/superbit/*.psf')
+        files = os.environ.get(
+            'SUPERBIT_PSFEX',
+            '../ngmix-squarem-shear/psf_data/emp_psfs_best/psfex-output/*.psf')
         conf = {'source': 'superbit', 'files': files,
                 'native_pixel_scale': FAMILIES['superbit'][0]}
     elif family == 'hst':
