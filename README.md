@@ -21,7 +21,8 @@ PSFs.
 | Table 1, iterations and speedups | `plots/paper_numbers.py` | `data/psf_bench.npy` |
 | Figs. 4–5, speedup and iteration CDFs | `plots/fig_iterations.py` | `data/psf_bench.npy` |
 | Fig. 6, Table 2, shear calibration | `plots/fig_shear.py`, `plots/paper_numbers.py` | `data/shear/*/summary.json` |
-| Fig. 7 (appendix), more gaussians | `plots/fig_ngauss.py` | `data/psf_bench_ngauss.npy` |
+| Appendix B, more gaussians | `plots/fig_ngauss.py` | `data/psf_bench_ngauss.npy` |
+| Appendix C, PSFs and fits in 3D | `plots/fig_3d.py` | the PSF models themselves |
 | every number in the text | `plots/paper_numbers.py` | all of the above |
 
 Every number in the paper's text comes from data. `paper_numbers.py` writes

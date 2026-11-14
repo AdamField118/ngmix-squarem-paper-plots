@@ -13,7 +13,8 @@ FAMS := superbit hst roman
 SHEAR := $(wildcard data/shear/*/summary.json)
 
 figures: figures/convergence_em.pdf figures/iterations_cdf.pdf \
-         figures/ngauss.pdf figures/numbers.tex figures/shear_bias.pdf
+         figures/ngauss.pdf figures/numbers.tex figures/shear_bias.pdf \
+         figures/psf3d_superbit.pdf
 
 figures/convergence_em.pdf: $(wildcard data/trace/*.npz) plots/fig_convergence.py
 	$(PY) plots/fig_convergence.py data/trace figures
@@ -21,6 +22,10 @@ figures/iterations_cdf.pdf: data/psf_bench.npy plots/fig_iterations.py
 	$(PY) plots/fig_iterations.py $< figures
 figures/ngauss.pdf: data/psf_bench_ngauss.npy plots/fig_ngauss.py
 	$(PY) plots/fig_ngauss.py $< figures
+# appendix C: one PSF per source and its fits in 3D (sources whose data are
+# missing are skipped)
+figures/psf3d_superbit.pdf: plots/fig_3d.py
+	$(PY) plots/fig_3d.py figures --families $(FAMS) --ipsf 0
 figures/shear_bias.pdf: $(SHEAR) plots/fig_shear.py
 	$(PY) plots/fig_shear.py figures $(SHEAR)
 figures/numbers.tex: data/psf_bench.npy plots/paper_numbers.py $(SHEAR) \
