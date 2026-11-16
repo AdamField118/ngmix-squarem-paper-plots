@@ -9,7 +9,7 @@
 set -euo pipefail
 export OMP_NUM_THREADS=1 NUMBA_NUM_THREADS=1 MKL_NUM_THREADS=1
 export PYTHONPATH=bench:plots:${PYTHONPATH:-}
-kind=$1      # ng5 | ngall | trace
+kind=$1      # ng5 | ngall | moffat | trace
 family=$2    # superbit | hst | roman
 nchunks=$3
 c=${SLURM_ARRAY_TASK_ID}
@@ -21,6 +21,9 @@ case $kind in
   ngall) python bench/run_psf_bench.py --family "$family" --npool 200 \
              --ngauss 3 5 7 9 --tols 1e-6 --chunk "$c" --nchunks "$nchunks" \
              --out data/bench/${family}_ngall_${tag}.npy ;;
+  moffat) python bench/run_moffat_bench.py --family "$family" --npool 200 \
+             --chunk "$c" --nchunks "$nchunks" \
+             --out data/bench/${family}_moffat_${tag}.npy ;;
   trace) python bench/run_trace.py --family "$family" --npsf 100 \
              --out data/trace/${family}.npz ;;
 esac

@@ -22,7 +22,9 @@ PSFs.
 | Figs. 4–5, speedup and iteration CDFs | `plots/fig_iterations.py` | `data/psf_bench.npy` |
 | Fig. 6, Table 2, shear calibration | `plots/fig_shear.py`, `plots/paper_numbers.py` | `data/shear/*/summary.json` |
 | Appendix B, more gaussians | `plots/fig_ngauss.py` | `data/psf_bench_ngauss.npy` |
-| Appendix C, PSFs and fits in 3D | `plots/fig_3d.py` | the PSF models themselves |
+| Appendix C, Moffat mixtures (table) | `plots/paper_numbers.py` | `data/psf_bench_moffat.npy` |
+| Appendix D, PSFs and three models of them | `plots/fig_fits2d.py` | the PSF models themselves |
+| (not in the paper) the same as 3D surfaces, `make figures3d` | `plots/fig_3d.py` | the PSF models themselves |
 | every number in the text | `plots/paper_numbers.py` | all of the above |
 
 Every number in the paper's text comes from data. `paper_numbers.py` writes

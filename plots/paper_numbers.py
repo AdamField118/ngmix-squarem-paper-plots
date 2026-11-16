@@ -12,6 +12,7 @@ writes
                              key prints as a red ??key
     figures/table_speed.tex  the rows of Table 1
     figures/table_shear.tex  the rows of Table 2
+    figures/table_moffat.tex the Moffat-mixture table (appendix C)
     figures/numbers.txt      the same statistics as plain text, for review
 """
 import argparse
@@ -142,6 +143,65 @@ def ngauss_numbers(N, d):
                 N[k + 'iter-median'] = np.median(x['numiter'])
 
 
+MOFFAT_ROWS = [  # (method, label in the table)
+    ('em5', r'EM, 5 Gaussians (\texttt{ngmix})'),
+    ('em5_sq', r'SQUAREM, 5 Gaussians (\texttt{ngmix})'),
+    ('em7_sq', r'SQUAREM, 7 Gaussians (\texttt{ngmix})'),
+    ('gauss7_sq', r'SQUAREM, 7 Gaussians (this kernel)'),
+    ('moffat1', 'EM, 1 Moffat'),
+    ('moffat1_sq', 'SQUAREM, 1 Moffat'),
+    ('moffat2', 'EM, 2 Moffats'),
+    ('moffat2_sq', 'SQUAREM, 2 Moffats'),
+    ('moffat3', 'EM, 3 Moffats'),
+    ('moffat3_sq', 'SQUAREM, 3 Moffats'),
+]
+
+
+def moffat_numbers(N, d, outdir):
+    """appendix C: Moffat mixtures against Gaussian mixtures"""
+    lines = []
+    for fam in [f for f in style.FAMILIES if f in set(d['family'])]:
+        lines.append(r'\multicolumn{7}{l}{%s}\\' % style.FAMILY_LABELS[fam])
+        for meth, label in MOFFAT_ROWS:
+            x = d[(d['family'] == fam) & (d['method'] == meth)]
+            if len(x) == 0:
+                continue
+            k = '%s-mof-%s-' % (fam, meth.replace('_', ''))
+            ok = x[x['flags'] != 2] if not meth.startswith('em') else x
+            t = 1e3 * x['time']
+            vals = {
+                'npsf': '%d' % len(x),
+                'iter-median': np.median(x['numiter']),
+                'time-median': np.median(t),
+                'time-mean': t.mean(),
+                'time-std': t.std(ddof=1),
+                'dT-median': np.nanmedian(np.abs(ok['dT_admom'])),
+                'de-median': np.nanmedian(ok['de_admom']),
+                'resid-median': np.nanmedian(ok['resid']),
+                'nfail': '%d' % (len(x) - len(ok)),
+            }
+            if meth.startswith('moffat'):
+                vals['betamin-median'] = np.nanmedian(x['beta_min'])
+                vals['betamax-median'] = np.nanmedian(x['beta_max'])
+            for kk, vv in vals.items():
+                N[k + kk] = vv
+            lines.append(
+                r'\quad %s & %d & %.1f & %.1f $\pm$ %.1f & $%s$ & %.3f & %d \\'
+                % (label, np.median(x['numiter']), np.median(t), t.mean(),
+                   t.std(ddof=1), fmt(np.nanmedian(np.abs(ok['dT_admom']))),
+                   np.nanmedian(ok['resid']), len(x) - len(ok)))
+    head = [r'\begin{tabular}{l rrr rr r}', r'\toprule',
+            r' & iterations & \multicolumn{2}{c}{wall time (ms)} & '
+            r'$|\delta T/T|$ & $L_1$ & failed \\',
+            r'\cmidrule(lr){3-4}',
+            r'method & median & median & mean $\pm$ std & median & median'
+            r' & \\',
+            r'\midrule']
+    with open(os.path.join(outdir, 'table_moffat.tex'), 'w') as f:
+        f.write('\n'.join(head + lines + [r'\bottomrule', r'\end{tabular}'])
+                + '\n')
+
+
 SHEAR_KEYS = ('m', 'c1', 'c2', 'alpha', 'R11')
 COST_KEYS = ('psf_time_frac', 'psf_iter_per_fit', 'time_per_object')
 
@@ -197,6 +257,7 @@ def main():
     p.add_argument('--bench')
     p.add_argument('--ngauss')
     p.add_argument('--shear')
+    p.add_argument('--moffat')
     p.add_argument('--outdir', required=True)
     args = p.parse_args()
 
@@ -205,6 +266,8 @@ def main():
         bench_numbers(N, np.load(args.bench), args.outdir)
     if args.ngauss and os.path.exists(args.ngauss):
         ngauss_numbers(N, np.load(args.ngauss))
+    if args.moffat and os.path.exists(args.moffat):
+        moffat_numbers(N, np.load(args.moffat), args.outdir)
     if args.shear and os.path.isdir(args.shear):
         shear_numbers(N, args.shear, args.outdir)
     N.write(args.outdir)
